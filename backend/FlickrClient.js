@@ -66,15 +66,17 @@ class FlickrClient {
 
     //Search flickrs photos in gallery based on a specified text 
     //https://api.flickr.com/services/rest?method=flickr.photos.search&api_key=0fc0d3e04c56d2dd7f799a2e97ec6c7d&gallery_id=66911286-72157647277042064&text=dog&format=json&nojsoncallback=1
-    searchPhotos(searchText) {
-
+    searchPhotos(searchText,options) {
+        const page = options.page;
+        const perPage = options.perPage;
         const url = flickrUrl + '?' + 'method=flickr.photos.search'
                                     + '&api_key=' + '0fc0d3e04c56d2dd7f799a2e97ec6c7d'
                                     + '&gallery_id=' + this.galleryId
                                     + '&format=' + format
                                     + '&text=' + searchText
                                     + '&nojsoncallback=1'
-                                    + '&per_page=10';
+                                    + '&page=' + page
+                                    + '&per_page=' + perPage;
 
         return getUrlData(url);
     }

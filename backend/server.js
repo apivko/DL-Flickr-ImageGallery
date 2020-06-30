@@ -1,13 +1,13 @@
 import express from 'express';
 import FlickrClient from './FlickrClient';
+import Photo from './models/Photo';
 import cors from 'cors';
 import dotevnt, { config } from 'dotenv';
-import Photo from './models/Photo';
-
 
 dotevnt.config(); // Still having problems with configuring the dotenv in FlickrClient
 
 const app = express();
+
 
 app.use(cors());
 
@@ -28,7 +28,7 @@ app.get("/api/photos", async (req, res) => {
 
 /**
  * @route       /api/photos/:photoId
- * @params -    photoId - the id of the single photo
+ * @params -    photoId (string)- the id of the single photo
  * @description Retrieves a single photo info based on its id from flickr
  * @returns     The specified photo information including its farm-id, secret, serve-id etc..
  */
@@ -48,14 +48,18 @@ app.get("/api/photos/:id", async (req, res) => {
 
 /**
  * @route       /api/search/:searchText
- * @params -    searchText
+ * @params -    searchText (string), options ({page int, perPage int })
  * @description Get gallery photos from flickr API based on a search text
  * @returns     An array of photos
  */
 
-app.get("/api/search/:searchText", async (req, res) => {
+app.get("/api/search/:searchText/:page?/:per_page?",async (req, res) => {
+    
     const searchText = req.params.searchText;
-    const clientData = await FlickrClient.searchPhotos(searchText);
+    const page = req.params.page || 1;
+    const per_page = req.params.per_page || 10;
+
+    const clientData = await FlickrClient.searchPhotos(searchText, {page: page, perPage: per_page});
     if (clientData.error)
         res.status(401).send(clientData.message);
     else{
@@ -63,5 +67,4 @@ app.get("/api/search/:searchText", async (req, res) => {
     }
 });
 
-
-app.listen(5001, () => { console.log('Server started at "http://localhost:5001"') });
+app.listen(2134, () => { console.log('Server started at "http://localhost:2134"') });

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function usePhotoSearch(query, pageNumber) {
+function usePhotoSearch(query, pageNumber, perPage) {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -18,15 +18,14 @@ function usePhotoSearch(query, pageNumber) {
 
         if (query === '')
             return
-
+        
         setLoading(true);
         setError(false);
 
         axios({
             method: 'GET',
-            url: 'http://localhost:5000/api/search/' + query,
+            url: 'http://localhost:2134/api/search/' + query + '/' + pageNumber +'/'+ perPage,
             params: {
-                page: pageNumber,
                 cancelToken: new axios.CancelToken(c => cancel = c)
             }
         }).then((result) => {
