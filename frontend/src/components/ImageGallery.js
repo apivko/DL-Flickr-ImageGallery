@@ -14,11 +14,11 @@ function ImageGallery() {
     setPageNumber(1);
 
   }
-  const { loading, error, photos/*, requestMorePhotos*/ } = usePhotoSearch(query, pageNumber);
+  const { loading, error, photos} = usePhotoSearch(query, pageNumber);
   return (<div className="imageGalleryContainer">
     <div className="header"><h1>Image Gallery</h1></div>
     <div className="searchField">
-      <span className="question">What photos would you like to search today? </span>
+      <span className="question">What photos would you like to search today?</span>
       <br />
       <input type="text" value={query} onChange={searchHandler}></input>
     </div>
