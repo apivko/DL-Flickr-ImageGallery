@@ -1,0 +1,52 @@
+.header{
+
+}
+.loading{
+    color: #008800;
+}
+
+.error{
+    color: #aa0000;
+}
+
+.searchField{
+    margin-top:10px;
+}
+.imageGalleryContainer{
+  padding: 1rem;
+}
+.photos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .photos li{
+    list-style-type: none;
+    padding:0;
+    margin: 1rem;
+  }
+  
+  .photo {
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  
+  .photo img {
+    max-width: 10rem;
+    max-height: 10rem;
+    border: 0.1rem #404040 solid;
+    border-radius: 3%;
+    box-shadow: 0 6px 6px 2px rgba(0, 0, 0, 0.3);
+    
+  }
+
+  .photo img:hover{
+    transition: all .3s;
+    transform: scale(1.1);
+    cursor: pointer;
+  }
+  
