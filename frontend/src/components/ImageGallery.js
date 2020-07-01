@@ -49,7 +49,7 @@ function ImageGallery() {
     </div>
     <div>
       <ul className="photos">
-        {photos.map((p, i) => {
+        {query !== '' && photos.map((p, i) => {
           return <li key={i}><div className="photo">
             <img onClick={()=>openModalHandler(i)} src={p} alt={i} />
           </div>
