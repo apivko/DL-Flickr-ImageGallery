@@ -3,13 +3,34 @@ import FlickrClient from './FlickrClient';
 import Photo from './models/Photo';
 import cors from 'cors';
 import dotevnt, { config } from 'dotenv';
+import cache from 'memory-cache'; 
 
 dotevnt.config(); // Still having problems with configuring the dotenv in FlickrClient
 
 const app = express();
-
+const cachingDuration = 30; //will save keys in memory for 30'
 
 app.use(cors());
+
+// configure cache middleware
+let memCache = new cache.Cache();
+let cacheMiddleware = (duration) => {
+    return (req, res, next) => {
+        let key =  '__express__' + req.originalUrl || req.url
+        let cacheContent = memCache.get(key);
+        if(cacheContent){
+            res.send( cacheContent );
+            return
+        }else{
+            res.sendResponse = res.send
+            res.send = (body) => {
+                memCache.put(key,body,duration*1000);
+                res.sendResponse(body)
+            }
+            next()
+        }
+    }
+}
 
 /**
  * @route       /api/photos
@@ -18,7 +39,7 @@ app.use(cors());
  * @returns     An array of photos
  */
 
-app.get("/api/photos", async (req, res) => {
+app.get("/api/photos", cacheMiddleware(cachingDuration) ,async (req, res) => {
     const clientData = await FlickrClient.getPhotos();
     if (clientData.error)
         res.status(401).send(clientData.message);
@@ -32,7 +53,7 @@ app.get("/api/photos", async (req, res) => {
  * @description Retrieves a single photo info based on its id from flickr
  * @returns     The specified photo information including its farm-id, secret, serve-id etc..
  */
-app.get("/api/photos/:id", async (req, res) => {
+app.get("/api/photos/:id", cacheMiddleware(cachingDuration),async (req, res) => {
     const id = req.params.id;
     const clientData = await FlickrClient.getPhotoInfo(id);
 
@@ -53,7 +74,7 @@ app.get("/api/photos/:id", async (req, res) => {
  * @returns     An array of photos
  */
 
-app.get("/api/search/:searchText/:page?/:per_page?",async (req, res) => {
+app.get("/api/search/:searchText/:page?/:per_page?", cacheMiddleware(cachingDuration), async (req, res) => {
     
     const searchText = req.params.searchText;
     const page = req.params.page || 1;
