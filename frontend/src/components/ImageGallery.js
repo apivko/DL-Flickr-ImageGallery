@@ -10,9 +10,11 @@ import 'react-image-lightbox/style.css';
 function ImageGallery() {
   //searchText 
   const [query, setQuery] = useState('');
+
   //pagination vars
   const [pageNumber, setPageNumber] = useState(1); 
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(30);
+
   //modal vars
   const [modal, setModal] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -29,17 +31,31 @@ function ImageGallery() {
     setPhotoIndex(index);
     setModal(true);
   } 
-
   //on search typing
   const searchHandler = (e) => {
-
-    setQuery(e.target.value);
+   
     setPageNumber(1);
-    // setPerPage(10);
+    setQuery(e.target.value);
   }
-
-  const { loading, error, photos, requestMorePhotos} = usePhotoSearch(query, pageNumber, perPage);
   
+  const scrollHandler = ()=>{
+    //if we're already scrolling or there are no more photos to request -> return
+    if (scrolling || !requestMorePhotos) return;
+    const lastPhoto = window.document.querySelector('.photos').lastChild;
+    const lastPhotoOffset = lastPhoto.offsetTop + lastPhoto.clientHeight;
+    const pageOffset = window.pageYOffset + window.innerHeight;
+    const bottomOffset = 20;
+    
+    if (pageOffset > lastPhotoOffset - bottomOffset)
+      requestMorePhotosHandler();
+  }
+  
+  window.document.addEventListener('scroll',(e)=>{
+    scrollHandler(e);
+  }); 
+
+  const { loading, error, photos, requestMorePhotos, scrolling} = usePhotoSearch(query, pageNumber, perPage);
+
   return (<div className="imageGalleryContainer">
     <div className="header"><h1>Image Gallery</h1></div>
     <div className="searchField">
@@ -56,7 +72,6 @@ function ImageGallery() {
           </li>;
         })}
       </ul>
-      {requestMorePhotos && <button type="button" onClick={requestMorePhotosHandler}>Load more...</button>}
     </div>
     <div className="loading">{loading && !error && 'Loading...'}</div>
     <div className="error">{error && query !== '' && 'Error'}</div>

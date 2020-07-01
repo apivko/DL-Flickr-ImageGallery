@@ -7,6 +7,7 @@ function usePhotoSearch(query, pageNumber, perPage) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [photos, setPhotos] = useState([]);
+    const [scrolling, setScrolling] = useState(false);
     const [requestMorePhotos, setRequestMorePhotos] = useState(false);
 
     useEffect(() => {
@@ -29,6 +30,8 @@ function usePhotoSearch(query, pageNumber, perPage) {
                 cancelToken: new axios.CancelToken(c => cancel = c)
             }
         }).then((result) => {
+            if (!result.data.photos)
+                throw 'Photos Not Found'; 
             setPhotos((prevPhotos) => {
                 return [...new Set([...prevPhotos, ...result.data.photos.photo.map((p) => {
                     return 'https://farm' + p.farm + '.staticflickr.com/' + p.server + '/' + p.id + '_' + p.secret + '.jpg';
@@ -36,6 +39,7 @@ function usePhotoSearch(query, pageNumber, perPage) {
             });
             setRequestMorePhotos(result.data.photos.photo.length > 0);
             setLoading(false);
+            setScrolling(false);
 
         }).catch((err) => {
             if (axios.isCancel(err)) return;
@@ -47,9 +51,7 @@ function usePhotoSearch(query, pageNumber, perPage) {
         return () => cancel;
     }, [query, pageNumber])
 
-
-
-    return { loading, error, photos, requestMorePhotos };
+    return { loading, error, photos, requestMorePhotos, scrolling };
 }
 
 
