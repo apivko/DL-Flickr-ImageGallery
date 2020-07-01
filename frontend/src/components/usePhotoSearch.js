@@ -33,7 +33,8 @@ function usePhotoSearch(query, pageNumber, perPage) {
             if (!result.data.photos)
                 throw 'Photos Not Found'; 
             setPhotos((prevPhotos) => {
-                return [...new Set([...prevPhotos, ...result.data.photos.photo.map((p) => {
+                let regex = new RegExp(query,'gi'); // in order to filter only images that contain the searchText in their title
+                return [...new Set([...prevPhotos, ...result.data.photos.photo.filter(p=>p.title.match(regex)!==null).map((p) => {
                     return 'https://farm' + p.farm + '.staticflickr.com/' + p.server + '/' + p.id + '_' + p.secret + '.jpg';
                 })])]
             });
