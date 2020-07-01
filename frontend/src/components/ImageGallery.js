@@ -31,13 +31,20 @@ function ImageGallery() {
     setPhotoIndex(index);
     setModal(true);
   } 
-  //on search typing
-  const searchHandler = (e) => {
-   
-    setPageNumber(1);
-    setQuery(e.target.value);
+  //on search typing - using timeout to make sure the user has stopped typing,
+  // preventing unnesecary requests
+  let timeout;
+  const searchHandler = (e)=>{
+
+    let val = e.target.value;
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(()=>{
+      setPageNumber(1);
+      setQuery(val);
+    }, 500);
   }
-  
+
+
   const scrollHandler = ()=>{
     //if we're already scrolling or there are no more photos to request -> return
     if (scrolling || !requestMorePhotos) return;
@@ -61,7 +68,7 @@ function ImageGallery() {
     <div className="searchField">
       <span className="question">What photos would you like to search today?</span>
       <br />
-      <input type="text" value={query} onChange={searchHandler}></input>
+      <input type="text" onChange={searchHandler}></input>
     </div>
     <div>
       <ul className="photos">
